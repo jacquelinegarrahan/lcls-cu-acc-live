@@ -1,0 +1,36 @@
+name: Create conda environment lcls-cu-acc-live
+
+on:
+  push:
+    branches:
+      - conda-pack-action
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build environment
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-activate-base: true
+          activate-environment: true
+          conda-build-version: 3.18.11
+          python-version: 3.8
+          channels: anaconda,conda-forge
+          channel-priority: flexible
+      - name: Build package
+        shell: bash -l {0}
+        run: |
+          conda install -c conda-forge conda-pack
+          conda env create -f environment.yml
+          conda pack -n lcls-cu-acc-live
+
+      - name: Publish artifact
+      - uses: actions/upload-artifact@v2
+        with:
+          name: lcls-cu-acc-live.tar.gz
+          path: lcls-cu-acc-live.tar.gz
+
+
+
